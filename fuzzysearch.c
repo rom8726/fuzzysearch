@@ -1,6 +1,7 @@
 #include "postgres.h"
 #include "fmgr.h"
 #include "utils/builtins.h"
+#include "utils/varlena.h"
 
 PG_MODULE_MAGIC;
 
@@ -22,8 +23,8 @@ Datum levenshtein_match(PG_FUNCTION_ARGS)
 
     int len1 = VARSIZE_ANY_EXHDR(txt1);
     int len2 = VARSIZE_ANY_EXHDR(txt2);
-    const char *str1 = VARDATA_ANY(txt1);
-    const char *str2 = VARDATA_ANY(txt2);
+    const char *str1 = (const char *)(VARDATA_ANY(txt1));
+    const char *str2 = (const char *)(VARDATA_ANY(txt2));
 
     int i, j;
     int *v0 = palloc0((len2 + 1) * sizeof(int));
@@ -34,13 +35,15 @@ Datum levenshtein_match(PG_FUNCTION_ARGS)
 
     for (i = 0; i < len1; i++)
     {
+        int *tmp = v0;
+
         v1[0] = i + 1;
         for (j = 0; j < len2; j++)
         {
             int cost = (str1[i] == str2[j]) ? 0 : 1;
             v1[j + 1] = min3(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost);
         }
-        int *tmp = v0;
+        
         v0 = v1;
         v1 = tmp;
     }
