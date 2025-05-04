@@ -1,0 +1,3 @@
+comment = 'Fuzzy string matching functions'
+default_version = '1.0'
+relocatable = true
