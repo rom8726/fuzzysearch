@@ -2,6 +2,7 @@
 #include "fmgr.h"
 #include "utils/builtins.h"
 #include "utils/varlena.h"
+#include "varatt.h"
 
 PG_MODULE_MAGIC;
 
